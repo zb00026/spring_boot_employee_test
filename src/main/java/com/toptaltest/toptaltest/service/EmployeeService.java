@@ -1,6 +1,7 @@
 package com.toptaltest.toptaltest.service;
 
 import com.toptaltest.toptaltest.entity.Employee;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class EmployeeService {
     public List<Employee> getEmployeesList() {
         List<Employee> employees = new ArrayList<>();
@@ -28,8 +30,12 @@ public class EmployeeService {
                 }
                 if (line.isBlank()) continue;
                 String[] data = line.split(",");
+                if (data.length != 4) {
+                    log.error("CSV record is invalid {}", line);
+                    throw new RuntimeException("An error occurred while reading csv file");
+                }
                 Employee emp = new Employee();
-                emp.setId(Integer.parseInt(data[0]));
+                emp.setId(Long.parseLong(data[0]));
                 emp.setName(data[1]);
                 emp.setDepartment(data[2]);
                 emp.setSalary(Double.parseDouble(data[3]));
